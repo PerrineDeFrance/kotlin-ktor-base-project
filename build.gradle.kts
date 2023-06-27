@@ -29,4 +29,6 @@ dependencies {
 
     // fournir une implémentation de client HTTP pour Ktor
     implementation("io.ktor:ktor-client-apache:$ktor_version")
+
+    implementation("io.ktor:ktor-server-netty:1.6.6")
 }

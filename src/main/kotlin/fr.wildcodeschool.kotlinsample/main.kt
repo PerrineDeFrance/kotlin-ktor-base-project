@@ -9,11 +9,13 @@ import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
-
+import io.ktor.util.cio.writeChannel
+import io.ktor.utils.io.copyAndClose
 import io.ktor.client.statement.*
 import io.ktor.content.*
 import io.ktor.http.*
 import io.ktor.utils.io.core.*
+import java.io.File
 
 
 @Serializable
@@ -67,15 +69,21 @@ class SpaceXApi {
     val client = HttpClient()
     try {
         val response: HttpResponse = client.get(articleUrl)
-
         val fileName = articleUrl.substringAfterLast("/")
-    
+        val time=System.currentTimeMillis()
+        val file = File("./bin/${time}.html")
+        
+        val urlArt=Url(articleUrl)
+        response.bodyAsChannel().copyAndClose(file.writeChannel())
+
+
+
+    println("répertoire courant : " + File(".").getAbsolutePath())
         println("downloaded : $fileName")
     } catch (e: Exception) {
         println("download fail : $articleUrl")
-    } finally {
-        client.close()
-    }
+        e.printStackTrace()
+    } 
 }
 }
 
@@ -90,6 +98,7 @@ fun main() = runBlocking<Unit> {
     }
 
     val destinationFolder = "articles"
+    
 
 coroutineScope {
         launches.forEach { launch ->
